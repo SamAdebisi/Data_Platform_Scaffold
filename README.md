@@ -17,3 +17,4 @@ Targets: ingestion, streaming, ELT with dbt, feature serving with Feast, complia
 - Kafka: Redpanda at localhost:19092; topic txn.raw.v1
 - Object store: MinIO at http://localhost:9000 (console :9001)
 - Warehouse (local): DuckDB via dbt. Parquet lake in MinIO.
+- The **txn stream → bronze** DAG relies on the new `./streaming` mount and S3/Kafka envs added above.

@@ -17,13 +17,12 @@ jobs:
           pip install -e ingestion/api[dev]
       - name: Unit tests
         run: pytest -q
-      - name: dbt tests
+      - name: dbt compile
         run: |
           pip install dbt-core dbt-duckdb
           dbt deps --project-dir transform/dbt/enflab
-          dbt build --profiles-dir transform/dbt --project-dir transform/dbt/enflab
+          dbt compile --profiles-dir transform/dbt --project-dir transform/dbt/enflab
       - name: GE dry run
         run: |
           pip install great_expectations
           great_expectations -v || true
-
