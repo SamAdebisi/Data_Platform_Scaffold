@@ -1,0 +1,32 @@
+{
+    "annotations": {"list": []},
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "links": [],
+    "panels": [
+      {
+        "type": "timeseries",
+        "title": "MinIO Usable Capacity",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+        "targets": [
+            {"expr": "minio_cluster_capacity_usable_total_bytes", "legendFormat": "usable"}
+        ]
+      },
+      {
+        "type": "timeseries",
+        "title": "Redpanda Kafka Connections",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+        "targets": [
+          {"expr": "vector(0)"}
+        ]
+      }
+    ],
+    "schemaVersion": 39,
+    "style": "dark",
+    "tags": ["minio", "prometheus"],
+    "time": {"from": "now-6h", "to": "now"},
+    "timezone": "browser",
+    "title": "MinIO Overview",
+    "version": 1
+}
