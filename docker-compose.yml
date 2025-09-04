@@ -10,6 +10,11 @@ services:
     command: server /data --console-address ":9001"
     ports: ["9000:9000","9001:9001"]
     volumes: ["minio:/data"]
+    healthcheck:
+      test: ["CMD-SHELL","wget -qO- http://localhost:9000/minio/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
   create-buckets:
     image: minio/mc
     depends_on: [minio]
@@ -40,8 +45,11 @@ services:
       - AWS_REGION=us-east-1
       - DUCKDB_S3_ENDPOINT=http://minio:9000
       - DUCKDB_S3_URL_STYLE=path
-      - DUCKDB_S3_USE_SSL=false
-
+    healthcheck:
+      test: ["CMD-SHELL","curl -fsS http://localhost:8080/health | grep -q healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
     ports: ["8080:8080"]
     depends_on: [postgres, redis]
     volumes:
@@ -93,6 +101,28 @@ services:
       - ./transform:/project/transform
     working_dir: /project
     entrypoint: ["bash","-lc","pip install --no-cache-dir great_expectations boto3 s3fs pandas pyarrow && tail -f /dev/null"]
+    prometheus:
+      image: prom/prometheus:v2.53.0
+      container_name: prometheus
+      volumes:
+        - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      ports: ["9090:9090"]
+      depends_on:
+        - minio
+
+    grafana:
+      image: grafana/grafana:10.4.5
+      container_name: grafana
+      environment:
+        - GF_SECURITY_ADMIN_PASSWORD=admin
+      volumes:
+        - ./observability/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+        - ./observability/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+        - ./observability/grafana/dashboards:/etc/grafana/dashboards:ro
+      ports: ["3000:3000"]
+      depends_on:
+        - prometheus
+
   metabase:
     image: metabase/metabase:v0.49.13
     ports: ["3000:3000"]
