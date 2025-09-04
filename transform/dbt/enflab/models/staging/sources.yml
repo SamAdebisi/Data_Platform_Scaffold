@@ -1,0 +1,9 @@
+version: 2
+sources:
+  - name: bronze
+    tables:
+      - name: transactions
+        external:
+          location: "s3://bronze/transactions/"
+          file_format: parquet
+        freshness: { error_after: {count: 2, period: hour} }

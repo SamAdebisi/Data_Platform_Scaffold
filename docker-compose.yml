@@ -1,0 +1,63 @@
+version: "3.9"
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.1.7
+    command: redpanda start --overprovisioned --smp 1 --memory 512M --reserve-memory 0M --node-id 0 --check=false --kafka-addr PLAINTEXT://0.0.0.0:9092,OUTSIDE://0.0.0.0:19092 --advertise-kafka-addr PLAINTEXT://redpanda:9092,OUTSIDE://localhost:19092
+    ports: ["19092:19092","9644:9644"]
+  minio:
+    image: minio/minio:RELEASE.2025-01-11T06-21-60Z
+    environment: {MINIO_ROOT_USER: "minio", MINIO_ROOT_PASSWORD: "minio123"}
+    command: server /data --console-address ":9001"
+    ports: ["9000:9000","9001:9001"]
+    volumes: ["minio:/data"]
+  create-buckets:
+    image: minio/mc
+    depends_on: [minio]
+    entrypoint: ["/bin/sh","-c"]
+    command: >
+      "mc alias set local http://minio:9000 minio minio123 &&
+       mc mb -p local/bronze || true &&
+       mc mb -p local/silver || true &&
+       mc mb -p local/gold || true"
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+  postgres:
+    image: postgres:16
+    environment: {POSTGRES_USER: airflow, POSTGRES_PASSWORD: airflow, POSTGRES_DB: airflow}
+    ports: ["5432:5432"]
+  airflow:
+    build: {context: ., dockerfile: docker/airflow/Dockerfile}
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__RBAC=True
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+    ports: ["8080:8080"]
+    depends_on: [postgres, redis]
+    volumes: ["./orchestration/airflow/dags:/opt/airflow/dags","./orchestration/airflow/plugins:/opt/airflow/plugins","./observability:/observability","./transform:/project/transform","./feature_store:/project/feature_store","./compliance:/project/compliance","./reverse_etl:/project/reverse_etl"]
+  dbt:
+    build: {context: ., dockerfile: docker/dbt/Dockerfile}
+    volumes: ["./transform:/project/transform","./observability:/project/observability","./samples:/project/samples"]
+  ingestion_api:
+    build: {context: ., dockerfile: docker/services/Dockerfile}
+    environment:
+      - KAFKA_BROKERS=redpanda:9092
+      - KAFKA_TOPIC=txn.raw.v1
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_AUDIENCE=ingestion
+      - JWT_ISSUER=local
+      - JWT_PUBLIC_KEY_BASE64=
+    ports: ["8000:8000","8090:8090"]
+    depends_on: [redpanda, redis]
+    volumes: ["./ingestion/api:/srv/app"]
+  great_expectations:
+    image: python:3.11-slim
+    volumes: ["./observability/great_expectations:/project/observability/great_expectations","./observability:/project/observability","./transform:/project/transform"]
+    working_dir: /project
+    entrypoint: ["bash","-lc","pip install great_expectations && tail -f /dev/null"]
+  metabase:
+    image: metabase/metabase:v0.49.13
+    ports: ["3000:3000"]
+volumes:
+  minio: {}

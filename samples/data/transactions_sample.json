@@ -1,0 +1,1 @@
+{"txn_id":"t-001","auth_id":"a-001","customer_id":"c-001","card_pan_token":"tok-1","amount":12.34,"currency":"eur","mcc":"5812","country":"FI","device_id":"dev-1","channel":"card_not_present","ts":1710000000,"status":"auth"}

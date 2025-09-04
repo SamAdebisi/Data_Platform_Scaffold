@@ -1,0 +1,5 @@
+syntax = "proto3";
+package fraud;
+service FraudService { rpc GetFeatures (GetFeaturesRequest) returns (GetFeaturesResponse); }
+message GetFeaturesRequest { string txn_id = 1; }
+message GetFeaturesResponse { string txn_id = 1; double velocity_1h = 2; double mcc_risk = 3; }

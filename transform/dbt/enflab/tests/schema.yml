@@ -1,0 +1,8 @@
+version: 2
+models:
+  - name: f_transactions
+    tests: [not_null]
+  - name: int_transactions_clean
+    columns:
+      - name: txn_id
+        tests: [not_null, unique]

@@ -1,0 +1,7 @@
+enflab:
+  outputs:
+    dev:
+      type: duckdb
+      path: /project/transform/dbt/enflab/target/enflab.duckdb
+      threads: 4
+  target: dev

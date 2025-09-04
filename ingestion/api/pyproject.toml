@@ -1,0 +1,12 @@
+[project]
+name = "enfuce-ingestion-api"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi", "uvicorn[standard]", "pydantic<2.0", "confluent-kafka",
+  "fastavro", "redis>=5", "PyJWT", "python-multipart", "requests"
+]
+[project.optional-dependencies]
+dev = ["pytest","httpx","black","ruff"]
+[tool.pytest.ini_options]
+testpaths = ["app/tests"]

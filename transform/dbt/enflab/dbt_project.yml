@@ -1,0 +1,12 @@
+name: enflab
+version: 1.0
+profile: enflab
+config-version: 2
+models:
+  enflab:
+    +materialized: table
+    staging: { +tags: ["bronze_to_silver"] }
+    intermediate: { +tags: ["bronze_to_silver"] }
+    marts: { +tags: ["silver_to_gold"] }
+seeds: { +quote_columns: false }
+snapshots: {}

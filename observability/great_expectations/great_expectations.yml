@@ -1,0 +1,5 @@
+datasources: {}
+config_version: 3.0
+stores: {}
+expectations_store_name: expectations_store
+validations_store_name: validations_store
