@@ -29,16 +29,43 @@ services:
   airflow:
     build: {context: ., dockerfile: docker/airflow/Dockerfile}
     environment:
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      - AIRFLOW__WEBSERVER__RBAC=True
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+      - KAFKA_BROKERS=redpanda:9092
+      - KAFKA_TOPIC=txn.raw.v1
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY=minio
+      - S3_SECRET_KEY=minio123
+      - BRONZE_BUCKET=bronze
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - DUCKDB_S3_ENDPOINT=http://minio:9000
+      - DUCKDB_S3_URL_STYLE=path
+      - DUCKDB_S3_USE_SSL=false
+
     ports: ["8080:8080"]
     depends_on: [postgres, redis]
-    volumes: ["./orchestration/airflow/dags:/opt/airflow/dags","./orchestration/airflow/plugins:/opt/airflow/plugins","./observability:/observability","./transform:/project/transform","./feature_store:/project/feature_store","./compliance:/project/compliance","./reverse_etl:/project/reverse_etl"]
+    volumes:
+     - ./orchestration/airflow/dags:/opt/airflow/dags
+     - ./orchestration/airflow/plugins:/opt/airflow/plugins
+     - ./observability:/observability
+     - ./transform:/project/transform
+     - ./feature_store:/project/feature_store
+     - ./compliance:/project/compliance
+     - ./reverse_etl:/project/reverse_etl
+     - ./streaming:/opt/airflow/streaming  
   dbt:
     build: {context: ., dockerfile: docker/dbt/Dockerfile}
-    volumes: ["./transform:/project/transform","./observability:/project/observability","./samples:/project/samples"]
+    environment:
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - DUCKDB_S3_ENDPOINT=http://minio:9000
+      - DUCKDB_S3_URL_STYLE=path
+      - DUCKDB_S3_USE_SSL=false
+    volumes:
+      - ./transform:/project/transform
+      - ./observability:/project/observability
+      - ./samples:/project/samples
   ingestion_api:
     build: {context: ., dockerfile: docker/services/Dockerfile}
     environment:
@@ -51,11 +78,21 @@ services:
     ports: ["8000:8000","8090:8090"]
     depends_on: [redpanda, redis]
     volumes: ["./ingestion/api:/srv/app"]
-  great_expectations:
+  great_expectations:    
     image: python:3.11-slim
-    volumes: ["./observability/great_expectations:/project/observability/great_expectations","./observability:/project/observability","./transform:/project/transform"]
+    environment:
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - DUCKDB_S3_ENDPOINT=http://minio:9000
+      - DUCKDB_S3_URL_STYLE=path
+      - DUCKDB_S3_USE_SSL=false
+    volumes:
+      - ./observability/great_expectations:/project/observability/great_expectations
+      - ./observability:/project/observability
+      - ./transform:/project/transform
     working_dir: /project
-    entrypoint: ["bash","-lc","pip install great_expectations && tail -f /dev/null"]
+    entrypoint: ["bash","-lc","pip install --no-cache-dir great_expectations boto3 s3fs pandas pyarrow && tail -f /dev/null"]
   metabase:
     image: metabase/metabase:v0.49.13
     ports: ["3000:3000"]
