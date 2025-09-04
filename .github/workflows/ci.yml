@@ -22,6 +22,10 @@ jobs:
           pip install dbt-core dbt-duckdb
           dbt deps --project-dir transform/dbt/enflab
           dbt compile --profiles-dir transform/dbt --project-dir transform/dbt/enflab
+      - name: streaming unit tests
+        run: |
+          pip install -r streaming/requirements-dev.txt
+          pytest -q streaming/tests
       - name: GE dry run
         run: |
           pip install great_expectations
