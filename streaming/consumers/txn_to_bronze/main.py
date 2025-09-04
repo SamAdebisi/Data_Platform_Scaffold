@@ -9,6 +9,7 @@ S3_EP = os.getenv("S3_ENDPOINT","http://localhost:9000")
 S3_KEY = os.getenv("S3_ACCESS_KEY","minio")
 S3_SEC = os.getenv("S3_SECRET_KEY","minio123")
 BUCKET = os.getenv("BRONZE_BUCKET","bronze")
+
 def write_parquet_s3(records):
     table = pa.Table.from_pylist(records)
     buf = io.BytesIO()
@@ -16,6 +17,7 @@ def write_parquet_s3(records):
     s3 = boto3.client("s3", endpoint_url=S3_EP, aws_access_key_id=S3_KEY, aws_secret_access_key=S3_SEC)
     key = f"transactions/dt={dt.date.today().isoformat()}/part-{int(dt.datetime.utcnow().timestamp())}.parquet"
     s3.put_object(Bucket=BUCKET, Key=key, Body=buf.getvalue())
+    
 def main():
     c = Consumer({"bootstrap.servers":KAFKA,"group.id":"txn-bronze","auto.offset.reset":"earliest","enable.auto.commit":False})
     c.subscribe([TOPIC])
