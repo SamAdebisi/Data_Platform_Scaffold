@@ -5,8 +5,11 @@ config-version: 2
 models:
   enflab:
     +materialized: table
-    staging: { +tags: ["bronze_to_silver"] }
-    intermediate: { +tags: ["bronze_to_silver"] }
-    marts: { +tags: ["silver_to_gold"] }
+    bronze: { +tags: ["bronze_to_silver"] }
+    silver: { +tags: ["bronze_to_silver"] }
+    gold: { +tags: ["silver_to_gold"] }
 seeds: { +quote_columns: false }
 snapshots: {}
+on-run-start:
+  - "INSTALL httpfs;"
+  - "LOAD httpfs;"
