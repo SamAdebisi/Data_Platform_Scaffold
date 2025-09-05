@@ -1,7 +1,9 @@
 import json, os, redis
 from datetime import datetime, timezone
+
 r = redis.from_url(os.getenv("REDIS_URL","redis://redis:6379/0"), decode_responses=True)
 sample_path = "/project/samples/data/transactions_sample.jsonl"
+
 with open(sample_path) as f:
     for line in f:
         if not line.strip():
