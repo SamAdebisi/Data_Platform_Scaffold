@@ -44,7 +44,7 @@ def test_commit_on_success(monkeypatch):
     def commit(_last):
         committed["n"] += 1
 
-    msgs = [FakeMsg({"txn_id": "1", "event_time": "2025-08-23T00:00:00Z", "amount": 10})]
+    msgs = [FakeMsg({"txn_id": "1",  "ts": 1710000000, "amount": 10})]
     n = process_batch(msgs, S3(), bucket="bronze", prefix="", commit=commit)
     assert n == 1
     assert committed["n"] == 1

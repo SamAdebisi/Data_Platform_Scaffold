@@ -23,6 +23,12 @@ Targets: ingestion, streaming, ELT with dbt, feature serving with Feast, complia
 make up
 make seed
 make dbt-build
-make ge-run      # optional placeholder
-open http://localhost:8090/docs   # Features API (served by features_api service)
+# make ge-run      # optional placeholder  # GE marker example (optional)
+# open http://localhost:8090/docs   # Features API (served by features_api service)
+python - <<'PY'
+import boto3
+s3=boto3.client('s3',endpoint_url='http://localhost:9000',aws_access_key_id='minio',aws_secret_access_key='minio123')
+s3.put_object(Bucket='bronze',Key='ge/checkpoints/last_success.marker',Body=b'ok')
+print('marker written')
+PY
 ```
