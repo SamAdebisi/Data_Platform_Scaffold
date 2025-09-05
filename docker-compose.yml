@@ -34,6 +34,11 @@ services:
   airflow:
     build: {context: ., dockerfile: docker/airflow/Dockerfile}
     environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__RBAC=True
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+     
       - KAFKA_BROKERS=redpanda:9092
       - KAFKA_TOPIC=txn.raw.v1
       - S3_ENDPOINT=http://minio:9000
@@ -45,6 +50,7 @@ services:
       - AWS_REGION=us-east-1
       - DUCKDB_S3_ENDPOINT=http://minio:9000
       - DUCKDB_S3_URL_STYLE=path
+      - DUCKDB_S3_USE_SSL=false
     healthcheck:
       test: ["CMD-SHELL","curl -fsS http://localhost:8080/health | grep -q healthy"]
       interval: 10s
