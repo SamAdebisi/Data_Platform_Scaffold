@@ -26,6 +26,11 @@ jobs:
         run: |
           pip install -r streaming/requirements-dev.txt
           pytest -q streaming/tests
+      - name: ingestion api unit tests
+        run: |
+          pip install -r ingestion_api/requirements.txt
+          pip install pytest
+          pytest -q ingestion_api/app/tests
       - name: GE dry run
         run: |
           pip install great_expectations
