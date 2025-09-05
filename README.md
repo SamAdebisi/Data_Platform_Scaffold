@@ -8,7 +8,7 @@ Targets: ingestion, streaming, ELT with dbt, feature serving with Feast, complia
 4) Ingest sample: make seed && make ingest-sample
 5) Run ELT: make dbt-build
 6) Check GE: make ge-run
-7) Fraud API: http://localhost:8090/docs
+7) Features API: http://localhost:8090/docs  (served by the ingestion_api container)
 8) Airflow: http://localhost:8080  (user: airflow / pw: airflow)
 9) Metabase: http://localhost:3000
 10) Tear down: make down
