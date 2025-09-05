@@ -1,0 +1,9 @@
+fastapi==0.112.2
+uvicorn[standard]==0.30.6
+pyjwt==2.9.0
+confluent-kafka==2.6.0
+redis==5.0.8
+fastavro==1.9.7
+pydantic==2.9.1
+requests==2.32.3
+python-json-logger==2.0.7
