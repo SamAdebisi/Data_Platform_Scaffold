@@ -1,0 +1,19 @@
+{   
+    "type": "record",
+    "name": "transaction_v1",
+    "namespace": "enfuce.txn",
+    "fields": [
+       {"name":"txn_id","type":"string"},
+       {"name":"auth_id","type":"string"},
+       {"name":"customer_id","type":"string"},
+       {"name":"card_pan_token","type":"string"},
+       {"name":"amount","type":"double"},
+       {"name":"currency","type":"string"},
+       {"name":"mcc","type":"string"},
+       {"name":"country","type":"string"},
+       {"name":"device_id","type":"string"},
+       {"name":"channel","type": {"type":"enum","name":"channel","symbols":["card_present","card_not_present"]}},
+       {"name":"ts","type":"long"},
+       {"name":"status","type": {"type":"enum","name":"status","symbols":["auth","clearing","reversal","refund"]}}
+    ]
+}

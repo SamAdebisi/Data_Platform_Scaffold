@@ -1,1 +1,1 @@
-# Namespace for consumer implementations.
+# Package init for streaming

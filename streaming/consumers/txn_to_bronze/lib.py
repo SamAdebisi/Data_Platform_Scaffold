@@ -10,9 +10,15 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 
-def partition_path(ts_iso: str) -> str:
-    """Return dt=YYYY-MM-DD from an ISO timestamp. Accepts Z or offset."""
-    dt = datetime.fromisoformat(ts_iso.replace("Z", "+00:00"))
+def partition_path(ts_epoch_ms: int | float | str) -> str:
+    if isinstance(ts_epoch_ms, str):
+        try:
+            ts_epoch_ms = float(ts_epoch_ms)
+        except Exception:
+            # fallback to UTC now
+            return f"dt={datetime.now(timezone.utc).date().isoformat()}"
+    ts_s = float(ts_epoch_ms) / (1000.0 if ts_epoch_ms > 10_000_000_000 else 1.0)
+    dt = datetime.fromtimestamp(ts_s, tz=timezone.utc)
     return f"dt={dt.date().isoformat()}"
 
 
