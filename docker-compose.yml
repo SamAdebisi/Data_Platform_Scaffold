@@ -123,6 +123,20 @@ services:
       depends_on:
         - prometheus
 
+    features_api:
+      image: python:3.11-slim
+      container_name: features_api
+      working_dir: /project/feature_store/api
+      environment:
+        - REDIS_URL=redis://redis:6379/0
+      volumes:
+        - ./feature_store:/project/feature_store
+      command: bash -lc "pip install --no-cache-dir fastapi uvicorn redis && uvicorn main:app --host 0.0.0.0 --port 8090"
+      ports:
+        - "8090:8090"
+      depends_on:
+        - redis
+
   metabase:
     image: metabase/metabase:v0.49.13
     ports: ["3000:3000"]

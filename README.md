@@ -18,3 +18,11 @@ Targets: ingestion, streaming, ELT with dbt, feature serving with Feast, complia
 - Object store: MinIO at http://localhost:9000 (console :9001)
 - Warehouse (local): DuckDB via dbt. Parquet lake in MinIO.
 - The **txn stream → bronze** DAG relies on the new `./streaming` mount and S3/Kafka envs added above.
+
+```
+make up
+make seed
+make dbt-build
+make ge-run      # optional placeholder
+open http://localhost:8090/docs   # Features API (served by features_api service)
+```

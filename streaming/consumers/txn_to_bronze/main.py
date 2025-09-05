@@ -3,7 +3,15 @@ from confluent_kafka import Consumer, KafkaException
 import boto3, pyarrow as pa, pyarrow.parquet as pq
 import time 
 from fastavro import parse_schema, validate
-from .lib import process_batch 
+
+# Support running as a script or as a package module
+try:  # when executed via `python -m streaming.consumers.txn_to_bronze.main`
+    from .lib import process_batch  # type: ignore
+except Exception:  # when executed via `python main.py`
+    import sys
+    from pathlib import Path
+    sys.path.append(str(Path(__file__).resolve().parent))
+    from lib import process_batch  # type: ignore
 
 SCHEMA = parse_schema(json.load(open(os.path.join(os.path.dirname(__file__),"../../kafka/schema_registry/transaction_v1.avsc"))))
 # KAFKA = os.getenv("KAFKA_BROKERS","localhost:9092")
@@ -14,7 +22,7 @@ S3_SEC = os.getenv("S3_SECRET_KEY","minio123")
 # BUCKET = os.getenv("BRONZE_BUCKET","bronze")
 BROKERS = os.getenv("KAFKA_BROKERS", "redpanda:9092")
 TOPIC = os.getenv("KAFKA_TOPIC", "txn.raw.v1")
-S3_ENDPOINT = os.getenv("S3_ENDPOINT", "http://minio:9000")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT", "http://minio:9000")   # container-internal URL
 BUCKET = os.getenv("BRONZE_BUCKET", "bronze")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "minio")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "minio123")
