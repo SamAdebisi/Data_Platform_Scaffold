@@ -1,5 +1,28 @@
-datasources: {}
 config_version: 3.0
-stores: {}
+
+datasources:
+  bronze_s3:
+    class_name: Datasource
+    execution_engine:
+      class_name: PandasExecutionEngine
+    data_connectors:
+      s3_data:
+        class_name: InferredAssetS3DataConnector
+        bucket: ${BRONZE_BUCKET:bronze}
+        prefix: transactions/
+        default_regex:
+          pattern: (.*)\.parquet
+          group_names: [data_asset_name]
+
+stores:
+  expectations_store:
+    class_name: ExpectationsStore
+  validations_store:
+    class_name: ValidationsStore
+  evaluation_parameter_store:
+    class_name: EvaluationParameterStore
+
 expectations_store_name: expectations_store
 validations_store_name: validations_store
+anonymous_usage_statistics:
+  enabled: false

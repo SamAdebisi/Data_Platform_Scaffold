@@ -3,5 +3,7 @@ config_version: 1.0
 class_name: SimpleCheckpoint
 validations:
   - batch_request:
-      datasource_name: parquet
+      datasource_name: bronze_s3
+      data_connector_name: s3_data
+      data_asset_name: transactions
     expectation_suite_name: bronze_suite
