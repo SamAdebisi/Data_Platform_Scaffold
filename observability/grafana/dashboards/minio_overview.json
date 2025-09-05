@@ -12,15 +12,7 @@
         "targets": [
             {"expr": "minio_cluster_capacity_usable_total_bytes", "legendFormat": "usable"}
         ]
-      },
-      {
-        "type": "timeseries",
-        "title": "Redpanda Kafka Connections",
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
-        "targets": [
-          {"expr": "vector(0)"}
-        ]
-      }
+      } 
     ],
     "schemaVersion": 39,
     "style": "dark",
