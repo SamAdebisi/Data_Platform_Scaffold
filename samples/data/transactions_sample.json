@@ -1,1 +1,4 @@
-{"txn_id":"t-001","auth_id":"a-001","customer_id":"c-001","card_pan_token":"tok-1","amount":12.34,"currency":"eur","mcc":"5812","country":"FI","device_id":"dev-1","channel":"card_not_present","ts":1710000000,"status":"auth"}
+{"txn_id":"t-0001","auth_id":"a-0001","customer_id":"c-0001","card_pan_token":"tok-111","amount":12.34,"currency":"EUR","mcc":"5812","country":"FI","device_id":"d-1","channel":"card_not_present","ts":1710000000,"status":"auth"}
+
+{"txn_id":"t-0002","auth_id":"a-0002","customer_id":"c-0002","card_pan_token":"tok-222","amount":20.00,"currency":"EUR","mcc":"5411","country":"SE","device_id":"d-2","channel":"card_present","ts":1710001000,"status":"auth"}
+
